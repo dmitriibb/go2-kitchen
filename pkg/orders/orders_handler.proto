@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option go_package = "dmbb.com/go2-kitchen/pkg/orders";
+
+package handler;
+
+message NewOrderItem {
+  string dishName = 1;
+  int32 itemId = 2;
+  string comment = 3;
+}
+
+message PutNewOrderRequest {
+  int32 orderId = 1;
+  repeated NewOrderItem items = 2;
+}
+
+message PutNewOrderResponse {
+  string status = 1;
+}
+
+service KitchenOrdersHandler {
+  rpc PutNewOrder(PutNewOrderRequest) returns (PutNewOrderResponse) {}
+}
