@@ -36,6 +36,9 @@ func Init() {
 }
 
 func initData() {
+	if saveMode == saveModeMongo {
+		createMongoCollection()
+	}
 	save(recipeBurger())
 	save(recipeCola())
 	save(recipeCoffee())
@@ -55,6 +58,17 @@ func save(recipe RecipeStage) {
 func saveInMemory(recipe RecipeStage) {
 	v, _ := json.Marshal(recipe)
 	inMemoryData[recipe.Name] = string(v)
+}
+
+func createMongoCollection() {
+	client := commonMongo.GetClient()
+	defer client.Disconnect(context.TODO())
+	err := client.Database(dbName).CreateCollection(context.TODO(), recipesCollection)
+	if err != nil {
+		logger.Warn("Collection '%s' created with error %s", recipesCollection, err.Error())
+	} else {
+		logger.Info("Collection '%s' created", recipesCollection)
+	}
 }
 
 func saveInMongo(recipe RecipeStage) {

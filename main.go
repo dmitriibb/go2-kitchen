@@ -22,6 +22,7 @@ func main() {
 	go3.TestHelloWorld()
 	logger.Info("start")
 	httpPort := utils.GetEnvProperty(constants.HttpPortEnv)
+	grpcHost := utils.GetEnvProperty("GRPC_HOST", "localhost")
 	grpcPort := utils.GetEnvProperty(constants.GrpcPortEnv)
 
 	// init
@@ -35,11 +36,11 @@ func main() {
 	// http handle
 	go func() {
 		http.ListenAndServe(fmt.Sprintf(":%v", httpPort), nil)
-		logger.Info("http started...")
+		logger.Info("http started on %s", fmt.Sprintf(":%v", httpPort))
 	}()
 
 	// grpc handle
-	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", grpcPort))
+	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%s", grpcHost, grpcPort))
 	if err != nil {
 		panic(fmt.Sprintf("failed to listen: %v", err))
 	}
@@ -47,5 +48,12 @@ func main() {
 	grpcServer := grpc.NewServer(opts...)
 	orders.RegisterKitchenOrdersHandlerServer(grpcServer, orders.OrdersHandler)
 	logger.Info("Kitchen service registered...")
-	grpcServer.Serve(lis)
+
+	go func() {
+		grpcServer.Serve(lis)
+	}()
+	logger.Info("grpcServer.Serving...")
+
+	forever := make(chan int)
+	<-forever
 }
