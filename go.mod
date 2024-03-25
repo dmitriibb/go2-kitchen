@@ -1,6 +1,6 @@
 module github.com/dmitriibb/go2-kitchen
 
-go 1.21
+go 1.21.4
 
 //replace github.com/dmitriibb/go-common v0.0.3 => /home/dmitrii/projects/go-common
 
