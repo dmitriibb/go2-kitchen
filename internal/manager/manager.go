@@ -7,10 +7,10 @@ import (
 	commonModel "github.com/dmitriibb/go-common/restaurant-common/model"
 	"github.com/dmitriibb/go-common/utils"
 	commonInitializer "github.com/dmitriibb/go-common/utils/initializer"
-	"github.com/dmitriibb/go2-kitchen/buffers"
-	"github.com/dmitriibb/go2-kitchen/model"
+	"github.com/dmitriibb/go2-kitchen/internal/buffers"
+	"github.com/dmitriibb/go2-kitchen/internal/model"
+	"github.com/dmitriibb/go2-kitchen/internal/workers"
 	"github.com/dmitriibb/go2-kitchen/pkg/orders"
-	"github.com/dmitriibb/go2-kitchen/workers"
 	"github.com/mitchellh/hashstructure"
 )
 
@@ -21,30 +21,34 @@ var initializer = commonInitializer.New(logger)
 var readyOrdersQueueName = utils.GetEnvProperty("READY_ORDERS_QUEUE_NAME")
 var readyOrderItemsQueueConfig rabbit.RabbitQueueConfig
 
-func Init(newOrders chan *orders.PutNewOrderRequest, closeChan chan string) {
-	initializer.Init(func() error {
-		qConfig, err := rabbit.GetQueueConfig(readyOrdersQueueName)
-		if err != nil {
-			return err
-		}
-		readyOrderItemsQueueConfig = qConfig
+var initFunc = func(args ...any) error {
+	newOrders := args[0].(chan *orders.PutNewOrderRequest)
+	closeChan := args[1].(chan string)
+	qConfig, err := rabbit.GetQueueConfig(readyOrdersQueueName)
+	if err != nil {
+		return err
+	}
+	readyOrderItemsQueueConfig = qConfig
 
-		startWorkers()
-		go func() {
-			for {
-				select {
-				case newOrder := <-newOrders:
-					processNewOrders(newOrder)
-				case readyItem := <-buffers.ReadyOrderItems:
-					processReadyOrderItem(readyItem)
-				case closeMessage := <-closeChan:
-					logger.Info("Stop manager because %v", closeMessage)
-					return
-				}
+	startWorkers()
+	go func() {
+		for {
+			select {
+			case newOrder := <-newOrders:
+				processNewOrders(newOrder)
+			case readyItem := <-buffers.ReadyOrderItems:
+				processReadyOrderItem(readyItem)
+			case closeMessage := <-closeChan:
+				logger.Info("Stop manager because %v", closeMessage)
+				return
 			}
-		}()
-		return nil
-	})
+		}
+	}()
+	return nil
+}
+
+func Init(newOrders chan *orders.PutNewOrderRequest, closeChan chan string) {
+	initializer.InitWithArgs(initFunc, newOrders, closeChan)
 }
 
 func processNewOrders(newOrder *orders.PutNewOrderRequest) {

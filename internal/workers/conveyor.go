@@ -2,8 +2,8 @@ package workers
 
 import (
 	"fmt"
-	"github.com/dmitriibb/go2-kitchen/model"
-	"github.com/dmitriibb/go2-kitchen/recipes"
+	"github.com/dmitriibb/go2-kitchen/internal/model"
+	"github.com/dmitriibb/go2-kitchen/internal/recipes"
 	"time"
 )
 
