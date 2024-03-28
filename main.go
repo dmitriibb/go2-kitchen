@@ -36,8 +36,8 @@ func main() {
 	// http handle
 	go func() {
 		http.ListenAndServe(fmt.Sprintf(":%v", httpPort), nil)
-		logger.Info("http started on %s", fmt.Sprintf(":%v", httpPort))
 	}()
+	logger.Info("http started on %s", fmt.Sprintf(":%v", httpPort))
 
 	// grpc handle
 	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%s", grpcHost, grpcPort))
@@ -52,7 +52,7 @@ func main() {
 	go func() {
 		grpcServer.Serve(lis)
 	}()
-	logger.Info("grpcServer.Serving...")
+	logger.Info("grpcServer.Serving on %s:%s...", grpcHost, grpcPort)
 
 	forever := make(chan int)
 	<-forever
