@@ -35,6 +35,7 @@ func main() {
 
 	// http handle
 	go func() {
+		http.HandleFunc("/recipes/menu", recipes.GetAllRecipesAsMenu)
 		http.ListenAndServe(fmt.Sprintf(":%v", httpPort), nil)
 	}()
 	logger.Info("http started on %s", fmt.Sprintf(":%v", httpPort))

@@ -2,10 +2,10 @@ module github.com/dmitriibb/go2-kitchen
 
 go 1.21.4
 
-//replace github.com/dmitriibb/go-common v0.0.6 => /home/dmitrii/projects/go-common
+//replace github.com/dmitriibb/go-common v0.0.8 => /home/dmitrii/projects/go-common
 
 require (
-	github.com/dmitriibb/go-common v0.0.6
+	github.com/dmitriibb/go-common v0.0.8
 	github.com/dmitriibb/go3 v0.1.1
 	github.com/mitchellh/hashstructure v1.1.0
 	go.mongodb.org/mongo-driver v1.14.0

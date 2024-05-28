@@ -97,6 +97,16 @@ func GetRecipe(name string) (RecipeStage, error) {
 	}
 }
 
+func GetAllRecipes() ([]*RecipeStage, error) {
+	if saveMode == saveModeInMemory {
+		panic("not implemented an never will be")
+	} else {
+		res, err := getAllFromMongo()
+		return res, err
+	}
+	//return nil, errors.New("Fake error")
+}
+
 func getRecipeFromMemory(name string) (*RecipeStage, error) {
 	data, ok := inMemoryData[name]
 	if !ok {
@@ -140,6 +150,32 @@ func getRecipeFromMongo(name string) (*RecipeStage, error) {
 	}
 	commonMongo.UseClient(ctx, f)
 	return res, err
+}
+
+func getAllFromMongo() ([]*RecipeStage, error) {
+	ctx := context.TODO()
+	var err error
+	var cur *mongo.Cursor
+	var results []RecipeStage
+	f := func(client *mongo.Client) any {
+		collection := client.Database(commonMongo.GetDbName()).Collection(recipesCollection)
+		cur, err = collection.Find(ctx, bson.D{})
+		if err != nil {
+			logger.Error("can't find all'%v'", recipesCollection)
+			return nil
+		}
+		if err = cur.All(ctx, &results); err != nil {
+			logger.Error("can't parse cursor into []RecipeStage")
+			return nil
+		}
+		return nil
+	}
+	commonMongo.UseClient(ctx, f)
+	resultPointers := make([]*RecipeStage, 0)
+	for _, rs := range results {
+		resultPointers = append(resultPointers, &rs)
+	}
+	return resultPointers, err
 }
 
 func recipeBurger() RecipeStage {
