@@ -173,7 +173,8 @@ func getAllFromMongo() ([]*RecipeStage, error) {
 	commonMongo.UseClient(ctx, f)
 	resultPointers := make([]*RecipeStage, 0)
 	for _, rs := range results {
-		resultPointers = append(resultPointers, &rs)
+		resCopy := rs
+		resultPointers = append(resultPointers, &resCopy)
 	}
 	return resultPointers, err
 }
