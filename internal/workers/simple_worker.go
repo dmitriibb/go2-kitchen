@@ -35,7 +35,7 @@ func (worker *simpleWorker) Start() {
 		for {
 			select {
 			case newOrderItem := <-buffers.NewOrderItems:
-				worker.logger.Info("take new order item %v", newOrderItem)
+				worker.logger.Info("take new order item %+v", newOrderItem)
 				worker.processOrderItem(newOrderItem)
 			case orderItemWrapper := <-conveyorItems:
 				if orderItemWrapper.RecipeStage != nil {
@@ -100,7 +100,7 @@ func (worker *simpleWorker) cookRecipeStage(itemWrapper *OrderItemWrapper, curre
 		currentTime := time.Now().Unix()
 		timePassed := currentTime - currentStage.TimeStarted
 		if currentStage.TimeStarted > 0 && timePassed >= currentStage.TimeToWaitSec {
-			worker.logger.Info("%s stage '%s' is ready after %s sec. Continue sub stages", itemWrapper, currentStage.Name, timePassed)
+			worker.logger.Info("%s stage '%s' is ready after %v sec. Continue sub stages", itemWrapper, currentStage.Name, timePassed)
 			ready := worker.cookSubStages(itemWrapper, currentStage)
 			if ready {
 				worker.logger.Info("%s stage '%s' is ready after %v sec", itemWrapper, currentStage.Name, time.Now().Unix()-currentStage.TimeStarted)

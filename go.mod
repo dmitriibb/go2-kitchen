@@ -5,7 +5,7 @@ go 1.21.4
 //replace github.com/dmitriibb/go-common v0.0.8 => /home/dmitrii/projects/go-common
 
 require (
-	github.com/dmitriibb/go-common v0.0.8
+	github.com/dmitriibb/go-common v0.1.0
 	github.com/dmitriibb/go3 v0.1.1
 	github.com/mitchellh/hashstructure v1.1.0
 	go.mongodb.org/mongo-driver v1.14.0
@@ -16,6 +16,7 @@ require (
 require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
+	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
